@@ -226,11 +226,11 @@ export default function ResultsPage() {
   }
 
   const displayCompanyInfo = isAdminMode ? {
-    name: adminData?.user?.name || 'Non renseigné',
+    name: adminData?.user?.name || '',
     size: '',
     sector: ''
   } : (companyInfo || {
-    name: 'Non renseigné',
+    name: '',
     size: '',
     sector: ''
   })
@@ -317,8 +317,8 @@ export default function ResultsPage() {
           {adminData && (
             <div className="bg-white p-4 rounded-lg shadow mb-6">
               <h2 className="text-xl font-semibold mb-2">Informations utilisateur</h2>
-              <p>Nom : {adminData.user.name || 'Non renseigné'}</p>
-              <p>Email : {adminData.user.email}</p>
+              <p>Nom : {adminData.user?.name}</p>
+              <p>Email : {adminData.user?.email}</p>
               <p>Date : {adminData.createdAt ? new Date(adminData.createdAt).toLocaleDateString('fr-FR', {
                 day: 'numeric',
                 month: 'long',

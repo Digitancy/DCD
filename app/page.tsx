@@ -7,7 +7,6 @@ import { Icon } from '@/components/ui/components/Icon'
 import type { IconName } from '@/components/ui/components'
 import { Button } from '@/components/ui/button'
 import { Transition } from '@/components/ui/transition'
-import FirebaseExample from './components/FirebaseExample'
 
 const univers: Array<{
   title: string
@@ -196,7 +195,6 @@ export default function HomePage() {
             </motion.div>
           </div>
         </Transition>
-        <FirebaseExample />
       </div>
     </main>
   )

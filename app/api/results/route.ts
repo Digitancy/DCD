@@ -28,6 +28,14 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { userId, score, answers, companyInfo } = body;
 
+    // Validation des champs obligatoires
+    if (!companyInfo?.name || !companyInfo?.email) {
+      return NextResponse.json(
+        { error: 'Le nom et l\'email sont obligatoires' },
+        { status: 400 }
+      );
+    }
+
     // Créer un utilisateur anonyme si nécessaire
     const usersRef = collection(db, 'users');
     const userQuery = query(usersRef, where('id', '==', userId));
@@ -38,16 +46,16 @@ export async function POST(request: Request) {
       // Créer un nouvel utilisateur
       const newUserRef = await addDoc(usersRef, {
         id: userId,
-        name: companyInfo?.name || 'Anonyme',
-        email: companyInfo?.email || 'anonymous@example.com',
+        name: companyInfo.name,
+        email: companyInfo.email,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
       });
       
       user = {
         id: newUserRef.id,
-        name: companyInfo?.name || 'Anonyme',
-        email: companyInfo?.email || 'anonymous@example.com'
+        name: companyInfo.name,
+        email: companyInfo.email
       };
     } else {
       user = {
@@ -115,12 +123,21 @@ export async function GET() {
     // Combiner les résultats avec les utilisateurs
     const results: Result[] = resultsSnapshot.docs.map(doc => {
       const data = doc.data();
-      // Convertir les timestamps Firestore en objets Date pour la sérialisation JSON
+      
+      // Fonction utilitaire pour convertir les timestamps
+      const convertTimestamp = (timestamp: any) => {
+        if (!timestamp) return null;
+        if (typeof timestamp === 'string') return timestamp;
+        if (typeof timestamp.toDate === 'function') return timestamp.toDate().toISOString();
+        if (timestamp.seconds) return new Date(timestamp.seconds * 1000).toISOString();
+        return null;
+      };
+
       const result = {
         id: doc.id,
         ...data,
-        createdAt: data.createdAt ? data.createdAt.toDate ? data.createdAt.toDate().toISOString() : new Date(data.createdAt.seconds * 1000).toISOString() : null,
-        updatedAt: data.updatedAt ? data.updatedAt.toDate ? data.updatedAt.toDate().toISOString() : new Date(data.updatedAt.seconds * 1000).toISOString() : null,
+        createdAt: convertTimestamp(data.createdAt),
+        updatedAt: convertTimestamp(data.updatedAt),
         user: users[data.userId] || null
       } as Result;
       return result;

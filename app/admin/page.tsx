@@ -15,7 +15,7 @@ interface Result {
   id: string;
   score: number;
   answers: any;
-  createdAt: any; // Peut être un Timestamp Firestore ou une chaîne ISO
+  createdAt: string | null;
   user: {
     name: string;
     email: string;
@@ -109,30 +109,9 @@ export default function AdminPage() {
       case 'score':
         return multiplier * (a.score - b.score);
       case 'createdAt':
-        let dateA: Date;
-        let dateB: Date;
-        
-        if (typeof a.createdAt === 'string') {
-          dateA = new Date(a.createdAt);
-        } else if (a.createdAt && typeof a.createdAt.toDate === 'function') {
-          dateA = a.createdAt.toDate();
-        } else if (a.createdAt && a.createdAt.seconds) {
-          dateA = new Date(a.createdAt.seconds * 1000);
-        } else {
-          dateA = new Date(0); // Date invalide
-        }
-        
-        if (typeof b.createdAt === 'string') {
-          dateB = new Date(b.createdAt);
-        } else if (b.createdAt && typeof b.createdAt.toDate === 'function') {
-          dateB = b.createdAt.toDate();
-        } else if (b.createdAt && b.createdAt.seconds) {
-          dateB = new Date(b.createdAt.seconds * 1000);
-        } else {
-          dateB = new Date(0); // Date invalide
-        }
-        
-        return multiplier * (dateA.getTime() - dateB.getTime());
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return multiplier * (dateA - dateB);
       default:
         return 0;
     }
@@ -142,8 +121,8 @@ export default function AdminPage() {
     .filter((result) => {
       const searchLower = searchTerm.toLowerCase();
       return (
-        result.user.name?.toLowerCase().includes(searchLower) ||
-        result.user.email.toLowerCase().includes(searchLower) ||
+        (result.user?.name?.toLowerCase().includes(searchLower) || false) ||
+        (result.user?.email?.toLowerCase().includes(searchLower) || false) ||
         result.score.toString().includes(searchLower)
       );
     })
@@ -152,20 +131,10 @@ export default function AdminPage() {
   const exportToCSV = () => {
     const headers = ['Nom', 'Email', 'Score', 'Date', 'Réponses'];
     const csvData = filteredResults.map((result) => [
-      result.user.name || 'Non renseigné',
-      result.user.email,
+      result.user?.name || 'Non renseigné',
+      result.user?.email || 'Non renseigné',
       result.score,
-      result.createdAt ? 
-        format(
-          typeof result.createdAt === 'string' 
-            ? new Date(result.createdAt) 
-            : (typeof result.createdAt.toDate === 'function' 
-                ? result.createdAt.toDate() 
-                : new Date(result.createdAt.seconds * 1000)), 
-          'Pp', 
-          { locale: fr }
-        ) : 
-        'Date inconnue',
+      result.createdAt ? format(new Date(result.createdAt), 'Pp', { locale: fr }) : 'Date inconnue',
       JSON.stringify(result.answers),
     ]);
 
@@ -229,20 +198,8 @@ export default function AdminPage() {
   };
 
   const viewResults = (result: Result) => {
-    // Convertir le timestamp Firestore en format sérialisable
-    const serializableResult = {
-      ...result,
-      createdAt: result.createdAt ? 
-        (typeof result.createdAt.toDate === 'function' 
-          ? result.createdAt.toDate().toISOString() 
-          : (result.createdAt.seconds 
-              ? new Date(result.createdAt.seconds * 1000).toISOString()
-              : null)) 
-        : null
-    };
-    
-    // Stocker temporairement les données dans le localStorage
-    localStorage.setItem('adminViewResult', JSON.stringify(serializableResult));
+    // Les données sont déjà dans le bon format depuis l'API
+    localStorage.setItem('adminViewResult', JSON.stringify(result));
     router.push('/diagnostic/results?mode=admin');
   };
 
@@ -341,12 +298,12 @@ export default function AdminPage() {
                       >
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm font-medium text-hex-dark">
-                            {result.user.name || 'Non renseigné'}
+                            {result.user?.name || 'Non renseigné'}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-slogan">
-                            {result.user.email}
+                            {result.user?.email || 'Non renseigné'}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -357,15 +314,7 @@ export default function AdminPage() {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-slogan">
                             {result.createdAt ? 
-                              format(
-                                typeof result.createdAt === 'string' 
-                                  ? new Date(result.createdAt) 
-                                  : (typeof result.createdAt.toDate === 'function' 
-                                      ? result.createdAt.toDate() 
-                                      : new Date(result.createdAt.seconds * 1000)), 
-                                'Pp', 
-                                { locale: fr }
-                              ) : 
+                              format(new Date(result.createdAt), 'Pp', { locale: fr }) : 
                               'Date inconnue'}
                           </div>
                         </td>
