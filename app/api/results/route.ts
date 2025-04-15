@@ -1,9 +1,27 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
 import { getServerSession } from 'next-auth';
+import { db } from '@/lib/firebase';
+import { collection, addDoc, getDocs, query, orderBy, serverTimestamp, where, getDoc } from 'firebase/firestore';
 import { authOptions } from '@/lib/auth';
 
-const prisma = new PrismaClient();
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  createdAt?: any;
+  updatedAt?: any;
+}
+
+interface Result {
+  id: string;
+  score: number;
+  answers: any;
+  companyInfo?: any;
+  userId: string;
+  createdAt?: any;
+  updatedAt?: any;
+  user?: User;
+}
 
 export async function POST(request: Request) {
   try {
@@ -11,33 +29,52 @@ export async function POST(request: Request) {
     const { userId, score, answers, companyInfo } = body;
 
     // Créer un utilisateur anonyme si nécessaire
-    let user = await prisma.user.findUnique({
-      where: { id: userId },
-    });
-
-    if (!user) {
-      user = await prisma.user.create({
-        data: {
-          id: userId,
-          name: companyInfo?.name || 'Anonyme',
-          email: companyInfo?.email || 'anonymous@example.com',
-        },
+    const usersRef = collection(db, 'users');
+    const userQuery = query(usersRef, where('id', '==', userId));
+    const userSnapshot = await getDocs(userQuery);
+    
+    let user: User;
+    if (userSnapshot.empty) {
+      // Créer un nouvel utilisateur
+      const newUserRef = await addDoc(usersRef, {
+        id: userId,
+        name: companyInfo?.name || 'Anonyme',
+        email: companyInfo?.email || 'anonymous@example.com',
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
       });
+      
+      user = {
+        id: newUserRef.id,
+        name: companyInfo?.name || 'Anonyme',
+        email: companyInfo?.email || 'anonymous@example.com'
+      };
+    } else {
+      user = {
+        id: userSnapshot.docs[0].id,
+        ...userSnapshot.docs[0].data()
+      } as User;
     }
 
-    const result = await prisma.result.create({
-      data: {
-        score,
-        answers,
-        companyInfo,
-        userId: user.id,
-      },
-      include: {
-        user: true,
-      },
+    // Créer le résultat
+    const resultsRef = collection(db, 'results');
+    const resultRef = await addDoc(resultsRef, {
+      score,
+      answers,
+      companyInfo,
+      userId: user.id,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
     });
 
-    return NextResponse.json(result);
+    // Récupérer le résultat créé
+    const resultSnap = await getDoc(resultRef);
+    
+    return NextResponse.json({
+      id: resultSnap.id,
+      ...resultSnap.data(),
+      user
+    });
   } catch (error) {
     console.error('Erreur lors de la sauvegarde du résultat:', error);
     return NextResponse.json(
@@ -58,14 +95,31 @@ export async function GET() {
       );
     }
 
-    // Récupérer tous les résultats avec les informations utilisateur
-    const results = await prisma.result.findMany({
-      include: {
-        user: true,
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
+    // Récupérer tous les résultats
+    const resultsRef = collection(db, 'results');
+    const resultsQuery = query(resultsRef, orderBy('createdAt', 'desc'));
+    const resultsSnapshot = await getDocs(resultsQuery);
+    
+    // Récupérer les utilisateurs associés
+    const usersRef = collection(db, 'users');
+    const usersSnapshot = await getDocs(usersRef);
+    const users: Record<string, User> = {};
+    
+    usersSnapshot.forEach(doc => {
+      users[doc.id] = {
+        id: doc.id,
+        ...doc.data()
+      } as User;
+    });
+    
+    // Combiner les résultats avec les utilisateurs
+    const results: Result[] = resultsSnapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        user: users[data.userId] || null
+      } as Result;
     });
 
     return NextResponse.json(results);
