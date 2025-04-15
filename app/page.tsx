@@ -98,13 +98,15 @@ export default function HomePage() {
               className="text-center mb-16"
             >
               <h1 className="text-4xl md:text-6xl font-bold text-[#004D4D] mb-6">
-                Diagnostic des Compétences<br />Digitales
+                Évaluez vos compétences digitales<br />
+                <span className="text-[#B4003C]">en 15 minutes</span>
                 <div className="w-48 h-1 bg-[#B4003C] mt-2 mx-auto" />
               </h1>
               <p className="text-xl text-gray-700 max-w-3xl mx-auto mb-8 leading-relaxed">
-                Découvrez le niveau de maturité digitale de votre équipe et obtenez un plan d'action personnalisé. 
-                Notre diagnostic évalue les compétences clés dans 6 univers essentiels, vous permettant d'identifier 
-                précisément les forces et les axes d'amélioration de vos collaborateurs.
+                Vous ne savez pas toujours où <span className="font-semibold text-[#004D4D]">concentrer vos efforts de formation digitale</span> ? Notre diagnostic vous offre une vision claire et mesurable de la maturité digitale de votre organisation à travers <span className="font-semibold text-[#B4003C]">6 univers clés</span> : transformation, agilité, innovation, expérience client, technologie et data.
+              </p>
+              <p className="text-xl text-gray-700 max-w-3xl mx-auto mb-8 leading-relaxed">
+                En comparant les <span className="font-semibold text-[#004D4D]">profils</span> (leaders, managers, spécialistes, collaborateurs), vous identifiez les <span className="font-semibold text-[#B4003C]">écarts à combler</span> et les priorités à traiter pour faire progresser vos équipes là où cela aura le plus d'impact.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
                 <Button
