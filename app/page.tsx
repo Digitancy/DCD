@@ -85,11 +85,11 @@ export default function HomePage() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white to-gray-50">
+    <main className="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-24">
         <Transition>
           <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-[#004D4D]/5 to-[#B4003C]/5 rounded-3xl -z-10" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#004D4D]/5 to-[#B4003C]/5 dark:from-[#004D4D]/10 dark:to-[#B4003C]/10 rounded-3xl -z-10" />
             
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -97,25 +97,25 @@ export default function HomePage() {
               transition={{ duration: 0.5 }}
               className="text-center mb-16"
             >
-              <h1 className="text-4xl md:text-6xl font-bold text-[#004D4D] mb-6">
+              <h1 className="text-4xl md:text-6xl font-bold text-[#004D4D] dark:text-[#00A3A3] mb-6">
                 Évaluez vos compétences digitales<br />
-                <span className="text-[#B4003C]">en 15 minutes</span>
-                <div className="w-48 h-1 bg-[#B4003C] mt-2 mx-auto" />
+                <span className="text-[#B4003C] dark:text-[#FF4D6D]">en 15 minutes</span>
+                <div className="w-48 h-1 bg-[#B4003C] dark:bg-[#FF4D6D] mt-2 mx-auto" />
               </h1>
-              <p className="text-xl text-gray-700 max-w-3xl mx-auto mb-8 leading-relaxed">
-                Vous ne savez pas toujours où <span className="font-semibold text-[#004D4D]">concentrer vos efforts de formation digitale</span> ? Notre diagnostic vous offre une vision claire et mesurable de la maturité digitale de votre organisation à travers <span className="font-semibold text-[#B4003C]">6 univers clés</span> : transformation, agilité, innovation, expérience client, technologie et data.
+              <p className="text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto mb-8 leading-relaxed">
+                Vous ne savez pas toujours où <span className="font-semibold text-[#004D4D] dark:text-[#00A3A3]">concentrer vos efforts de formation digitale</span> ? Notre diagnostic vous offre une vision claire et mesurable de la maturité digitale de votre organisation à travers <span className="font-semibold text-[#B4003C] dark:text-[#FF4D6D]">6 univers clés</span> : transformation, agilité, innovation, expérience client, technologie et data.
               </p>
-              <p className="text-xl text-gray-700 max-w-3xl mx-auto mb-8 leading-relaxed">
-                En comparant les <span className="font-semibold text-[#004D4D]">profils</span> (leaders, managers, spécialistes, collaborateurs), vous identifiez les <span className="font-semibold text-[#B4003C]">écarts à combler</span> et les priorités à traiter pour faire progresser vos équipes là où cela aura le plus d'impact.
+              <p className="text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto mb-8 leading-relaxed">
+                En comparant les <span className="font-semibold text-[#004D4D] dark:text-[#00A3A3]">profils</span> (leaders, managers, spécialistes, collaborateurs), vous identifiez les <span className="font-semibold text-[#B4003C] dark:text-[#FF4D6D]">écarts à combler</span> et les priorités à traiter pour faire progresser vos équipes là où cela aura le plus d'impact.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
                 <Button
                   onClick={() => router.push('/diagnostic')}
-                  className="bg-[#B4003C] hover:bg-[#8A002E] text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all transform hover:scale-105 hover:shadow-lg w-full sm:w-auto"
+                  className="bg-[#B4003C] hover:bg-[#8A002E] dark:bg-[#FF4D6D] dark:hover:bg-[#FF3355] text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all transform hover:scale-105 hover:shadow-lg w-full sm:w-auto"
                 >
                   Commencer le diagnostic
                 </Button>
-                <p className="text-sm text-gray-500">Durée estimée : 15-20 minutes</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Durée estimée : 15-20 minutes</p>
               </div>
             </motion.div>
 
@@ -124,21 +124,21 @@ export default function HomePage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
-                className="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-shadow"
+                className="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-lg hover:shadow-xl transition-shadow"
               >
-                <h2 className="text-2xl font-bold text-[#B4003C] mb-6 flex items-center">
-                  <span className="bg-[#B4003C] text-white rounded-full w-8 h-8 flex items-center justify-center text-sm mr-3">6</span>
+                <h2 className="text-2xl font-bold text-[#B4003C] dark:text-[#FF4D6D] mb-6 flex items-center">
+                  <span className="bg-[#B4003C] dark:bg-[#FF4D6D] text-white rounded-full w-8 h-8 flex items-center justify-center text-sm mr-3">6</span>
                   Univers d'Expertise
                 </h2>
                 <div className="space-y-6">
                   {univers.map((item, index) => (
                     <div key={item.title} className="flex items-start space-x-4 group">
-                      <div className="bg-[#004D4D]/5 rounded-lg p-2 group-hover:bg-[#004D4D]/10 transition-colors">
-                        <Icon name={item.icon} className="text-[#004D4D]" />
+                      <div className="bg-[#004D4D]/5 dark:bg-[#004D4D]/10 rounded-lg p-2 group-hover:bg-[#004D4D]/10 dark:group-hover:bg-[#004D4D]/20 transition-colors">
+                        <Icon name={item.icon} className="text-[#004D4D] dark:text-[#00A3A3]" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-[#004D4D]">{item.title}</h3>
-                        <p className="text-sm text-gray-600">{item.description}</p>
+                        <h3 className="font-semibold text-[#004D4D] dark:text-[#00A3A3]">{item.title}</h3>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">{item.description}</p>
                       </div>
                     </div>
                   ))}
@@ -149,21 +149,21 @@ export default function HomePage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
-                className="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-shadow"
+                className="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-lg hover:shadow-xl transition-shadow"
               >
-                <h2 className="text-2xl font-bold text-[#B4003C] mb-6 flex items-center">
-                  <span className="bg-[#B4003C] text-white rounded-full w-8 h-8 flex items-center justify-center text-sm mr-3">4</span>
+                <h2 className="text-2xl font-bold text-[#B4003C] dark:text-[#FF4D6D] mb-6 flex items-center">
+                  <span className="bg-[#B4003C] dark:bg-[#FF4D6D] text-white rounded-full w-8 h-8 flex items-center justify-center text-sm mr-3">4</span>
                   Profils Évalués
                 </h2>
                 <div className="space-y-6">
                   {profils.map((item, index) => (
                     <div key={item.title} className="flex items-start space-x-4 group">
-                      <div className="bg-[#004D4D]/5 rounded-lg p-2 group-hover:bg-[#004D4D]/10 transition-colors">
-                        <Icon name={item.icon} className="text-[#004D4D]" />
+                      <div className="bg-[#004D4D]/5 dark:bg-[#004D4D]/10 rounded-lg p-2 group-hover:bg-[#004D4D]/10 dark:group-hover:bg-[#004D4D]/20 transition-colors">
+                        <Icon name={item.icon} className="text-[#004D4D] dark:text-[#00A3A3]" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-[#004D4D]">{item.title}</h3>
-                        <p className="text-sm text-gray-600">{item.description}</p>
+                        <h3 className="font-semibold text-[#004D4D] dark:text-[#00A3A3]">{item.title}</h3>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">{item.description}</p>
                       </div>
                     </div>
                   ))}
@@ -175,23 +175,23 @@ export default function HomePage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
-              className="text-center bg-[#004D4D]/5 rounded-xl p-8"
+              className="text-center bg-[#004D4D]/5 dark:bg-[#004D4D]/10 rounded-xl p-8"
             >
-              <h2 className="text-xl font-semibold text-[#004D4D] mb-4">
+              <h2 className="text-xl font-semibold text-[#004D4D] dark:text-[#00A3A3] mb-4">
                 Pourquoi faire le diagnostic maintenant ?
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
                 <div className="flex items-start space-x-3">
-                  <Icon name="Target" className="text-[#B4003C] flex-shrink-0 mt-1" />
-                  <p className="text-gray-700">Obtenez un rapport détaillé sur les compétences de votre équipe</p>
+                  <Icon name="Target" className="text-[#B4003C] dark:text-[#FF4D6D] flex-shrink-0 mt-1" />
+                  <p className="text-gray-700 dark:text-gray-300">Obtenez un rapport détaillé sur les compétences de votre équipe</p>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <Icon name="Target" className="text-[#B4003C] flex-shrink-0 mt-1" />
-                  <p className="text-gray-700">Identifiez les priorités de formation et développement</p>
+                  <Icon name="Target" className="text-[#B4003C] dark:text-[#FF4D6D] flex-shrink-0 mt-1" />
+                  <p className="text-gray-700 dark:text-gray-300">Identifiez les priorités de formation et développement</p>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <Icon name="Target" className="text-[#B4003C] flex-shrink-0 mt-1" />
-                  <p className="text-gray-700">Recevez des recommandations personnalisées d'amélioration</p>
+                  <Icon name="Target" className="text-[#B4003C] dark:text-[#FF4D6D] flex-shrink-0 mt-1" />
+                  <p className="text-gray-700 dark:text-gray-300">Recevez des recommandations personnalisées d'amélioration</p>
                 </div>
               </div>
             </motion.div>

@@ -26,10 +26,12 @@ import {
   Menu,
   Mail,
   Lock,
+  Sun,
+  Moon,
   LucideIcon
 } from 'lucide-react'
 
-export type IconName = 'Rocket' | 'GitBranch' | 'Lightbulb' | 'Users' | 'Laptop' | 'Database' | 'Crown' | 'UserCog' | 'Code' | 'User' | 'Building2' | 'ArrowRight' | 'Target' | 'FileText' | 'RefreshCw' | 'Download' | 'Building' | 'Briefcase' | 'ChartBar' | 'Brain' | 'Network' | 'LineChart' | 'Menu' | 'Mail' | 'Lock'
+export type IconName = 'Rocket' | 'GitBranch' | 'Lightbulb' | 'Users' | 'Laptop' | 'Database' | 'Crown' | 'UserCog' | 'Code' | 'User' | 'Building2' | 'ArrowRight' | 'Target' | 'FileText' | 'RefreshCw' | 'Download' | 'Building' | 'Briefcase' | 'ChartBar' | 'Brain' | 'Network' | 'LineChart' | 'Menu' | 'Mail' | 'Lock' | 'Sun' | 'Moon'
 
 const icons: Record<IconName, LucideIcon> = {
   Rocket,
@@ -56,7 +58,9 @@ const icons: Record<IconName, LucideIcon> = {
   LineChart,
   Menu,
   Mail,
-  Lock
+  Lock,
+  Sun,
+  Moon
 }
 
 export interface LucideIconProps {
