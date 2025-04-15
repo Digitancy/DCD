@@ -1,11 +1,16 @@
 import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import { db } from './firebase';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import bcrypt from 'bcryptjs';
 
-const ADMIN_USERNAME = 'Digitancy';
-const ADMIN_PASSWORD = 'digitancy2025';
-
-if (!process.env.NEXTAUTH_SECRET) {
-  throw new Error('NEXTAUTH_SECRET is not defined');
+interface AdminData {
+  id: string;
+  email: string;
+  name: string;
+  password: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export const authOptions: NextAuthOptions = {
@@ -13,60 +18,68 @@ export const authOptions: NextAuthOptions = {
     CredentialsProvider({
       name: 'Credentials',
       credentials: {
-        username: { label: 'Nom d\'utilisateur', type: 'text' },
-        password: { label: 'Mot de passe', type: 'password' }
+        email: { label: "Email", type: "email" },
+        password: { label: "Mot de passe", type: "password" }
       },
       async authorize(credentials) {
-        if (
-          credentials?.username === ADMIN_USERNAME &&
-          credentials?.password === ADMIN_PASSWORD
-        ) {
-          return {
-            id: '1',
-            name: ADMIN_USERNAME,
-            email: 'admin@digitancy.com',
-          };
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error('Email et mot de passe requis');
         }
-        return null;
+
+        try {
+          // Rechercher l'administrateur dans Firestore
+          const adminRef = collection(db, 'admins');
+          const q = query(adminRef, where('email', '==', credentials.email));
+          const querySnapshot = await getDocs(q);
+
+          if (querySnapshot.empty) {
+            throw new Error('Identifiants invalides');
+          }
+
+          const admin = {
+            id: querySnapshot.docs[0].id,
+            ...querySnapshot.docs[0].data()
+          } as AdminData;
+
+          // Vérifier le mot de passe
+          const passwordMatch = await bcrypt.compare(credentials.password, admin.password);
+
+          if (!passwordMatch) {
+            throw new Error('Identifiants invalides');
+          }
+
+          // Ne pas inclure le mot de passe dans les données de session
+          const { password, ...adminWithoutPassword } = admin;
+          return adminWithoutPassword;
+        } catch (error) {
+          console.error('Erreur d\'authentification:', error);
+          throw error;
+        }
       }
     })
   ],
+  session: {
+    strategy: 'jwt'
+  },
   pages: {
     signIn: '/admin/login',
-  },
-  session: {
-    strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60, // 30 jours
   },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.name = user.name;
         token.email = user.email;
+        token.name = user.name;
       }
       return token;
     },
     async session({ session, token }) {
-      if (session.user) {
+      if (session.user && token) {
         session.user.id = token.id as string;
-        session.user.name = token.name as string;
         session.user.email = token.email as string;
+        session.user.name = token.name as string;
       }
       return session;
-    },
-  },
-  secret: process.env.NEXTAUTH_SECRET,
-  useSecureCookies: process.env.NODE_ENV === 'production',
-  cookies: {
-    sessionToken: {
-      name: `next-auth.session-token`,
-      options: {
-        httpOnly: true,
-        sameSite: 'lax',
-        path: '/',
-        secure: process.env.NODE_ENV === 'production'
-      }
     }
   }
 }; 
