@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { db } from '@/lib/firebase';
-import { collection, addDoc, getDocs, query, orderBy, serverTimestamp, where, getDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, orderBy, serverTimestamp, where, getDoc, doc, setDoc } from 'firebase/firestore';
 import { authOptions } from '@/lib/auth';
 
 interface User {
@@ -43,9 +43,9 @@ export async function POST(request: Request) {
     
     let user: User;
     if (userSnapshot.empty) {
-      // Créer un nouvel utilisateur
-      const newUserRef = await addDoc(usersRef, {
-        id: userId,
+      // Créer un nouvel utilisateur avec un ID spécifique
+      const userDoc = doc(usersRef, userId);
+      await setDoc(userDoc, {
         name: companyInfo.name,
         email: companyInfo.email,
         createdAt: serverTimestamp(),
@@ -53,7 +53,7 @@ export async function POST(request: Request) {
       });
       
       user = {
-        id: newUserRef.id,
+        id: userId,
         name: companyInfo.name,
         email: companyInfo.email
       };
@@ -138,7 +138,11 @@ export async function GET() {
         ...data,
         createdAt: convertTimestamp(data.createdAt),
         updatedAt: convertTimestamp(data.updatedAt),
-        user: users[data.userId] || null
+        user: users[data.userId] || {
+          id: data.userId,
+          name: data.companyInfo?.name || 'Anonyme',
+          email: data.companyInfo?.email || 'anonymous@example.com'
+        }
       } as Result;
       return result;
     });

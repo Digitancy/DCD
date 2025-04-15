@@ -198,8 +198,18 @@ export default function AdminPage() {
   };
 
   const viewResults = (result: Result) => {
-    // Les données sont déjà dans le bon format depuis l'API
-    localStorage.setItem('adminViewResult', JSON.stringify(result));
+    // S'assurer que les données utilisateur sont correctement formatées
+    const formattedResult = {
+      ...result,
+      user: {
+        ...result.user,
+        name: result.user?.name || 'Anonyme',
+        email: result.user?.email || 'anonymous@example.com'
+      }
+    };
+    
+    // Stocker les données formatées dans le localStorage
+    localStorage.setItem('adminViewResult', JSON.stringify(formattedResult));
     router.push('/diagnostic/results?mode=admin');
   };
 

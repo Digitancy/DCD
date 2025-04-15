@@ -145,13 +145,18 @@ export default function ResultsPage() {
 
   const saveResults = async (processedResults: UniverseResult[]) => {
     try {
+      // Créer un ID unique basé sur le nom et l'email de l'entreprise
+      const userId = companyInfo ? 
+        `${companyInfo.name.toLowerCase().replace(/\s+/g, '-')}-${companyInfo.email.toLowerCase().replace(/\s+/g, '-')}` : 
+        'anonymous';
+      
       const response = await fetch('/api/results', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          userId: 'anonymous',
+          userId,
           score: processedResults.reduce((sum, universe) => 
             sum + Object.values(universe.scores).reduce((s, p) => s + p.score, 0), 0
           ) / (UNIVERSES.length * PROFILES.length),
@@ -226,7 +231,7 @@ export default function ResultsPage() {
   }
 
   const displayCompanyInfo = isAdminMode ? {
-    name: adminData?.user?.name || '',
+    name: adminData?.user?.name || 'Anonyme',
     size: '',
     sector: ''
   } : (companyInfo || {
