@@ -33,18 +33,18 @@ export default function DiagnosticPage() {
   }
 
   return (
-    <main className="min-h-screen p-8 md:p-24 bg-gradient-to-b from-white to-gray-50">
+    <main className="min-h-screen p-8 md:p-24 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
       <div className="max-w-2xl mx-auto">
         <Transition>
           <div className="relative mb-12">
-            <div className="absolute -top-20 -left-20 w-40 h-40 bg-cube-light/20 rounded-full blur-3xl" />
-            <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-hex-light/20 rounded-full blur-3xl" />
+            <div className="absolute -top-20 -left-20 w-40 h-40 bg-cube-light/20 dark:bg-cube-light/10 rounded-full blur-3xl" />
+            <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-hex-light/20 dark:bg-hex-light/10 rounded-full blur-3xl" />
             
-            <h1 className="text-3xl font-bold text-hex-dark mb-4 relative">
+            <h1 className="text-3xl font-bold text-hex-dark dark:text-white mb-4 relative">
               Informations de l'entreprise
               <div className="absolute -bottom-2 left-0 w-32 h-1 bg-gradient-to-r from-cube-light to-cube-dark rounded-full" />
             </h1>
-            <p className="text-gray-slogan">
+            <p className="text-gray-slogan dark:text-gray-300">
               Commençons par en savoir plus sur votre entreprise
             </p>
           </div>
@@ -56,11 +56,11 @@ export default function DiagnosticPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="p-8 border border-white/10 bg-white/5 backdrop-blur-sm rounded-xl shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] hover:shadow-[0_8px_32px_0_rgba(31,38,135,0.25)] transition-all duration-300"
+              className="p-8 border border-white/10 dark:border-gray-700 bg-white/5 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_0_rgba(31,38,135,0.25)] dark:hover:shadow-[0_8px_32px_0_rgba(0,0,0,0.4)] transition-all duration-300"
             >
               <div className="flex items-center space-x-3 mb-4">
-                <Icon name="Building2" className="text-cube-dark" />
-                <label htmlFor="name" className="block text-sm font-medium text-gray-slogan">
+                <Icon name="Building2" className="text-cube-dark dark:text-cube-light" />
+                <label htmlFor="name" className="block text-sm font-medium text-gray-slogan dark:text-gray-300">
                   Nom de l'entreprise
                 </label>
               </div>
@@ -69,7 +69,7 @@ export default function DiagnosticPage() {
                 id="name"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full px-4 py-3 border border-white/20 bg-white/5 rounded-xl focus:ring-2 focus:ring-cube-light focus:border-transparent transition-all duration-300"
+                className="w-full px-4 py-3 border border-white/20 dark:border-gray-600 bg-white/5 dark:bg-gray-700 rounded-xl focus:ring-2 focus:ring-cube-light focus:border-transparent transition-all duration-300 text-gray-900 dark:text-white"
                 required
               />
             </motion.div>
@@ -78,11 +78,11 @@ export default function DiagnosticPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="p-8 border border-white/10 bg-white/5 backdrop-blur-sm rounded-xl shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] hover:shadow-[0_8px_32px_0_rgba(31,38,135,0.25)] transition-all duration-300"
+              className="p-8 border border-white/10 dark:border-gray-700 bg-white/5 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_0_rgba(31,38,135,0.25)] dark:hover:shadow-[0_8px_32px_0_rgba(0,0,0,0.4)] transition-all duration-300"
             >
               <div className="flex items-center space-x-3 mb-4">
-                <Icon name="Mail" className="text-cube-dark" />
-                <label htmlFor="email" className="block text-sm font-medium text-gray-slogan">
+                <Icon name="Mail" className="text-cube-dark dark:text-cube-light" />
+                <label htmlFor="email" className="block text-sm font-medium text-gray-slogan dark:text-gray-300">
                   Email de contact
                 </label>
               </div>
@@ -91,7 +91,7 @@ export default function DiagnosticPage() {
                 id="email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="w-full px-4 py-3 border border-white/20 bg-white/5 rounded-xl focus:ring-2 focus:ring-cube-light focus:border-transparent transition-all duration-300"
+                className="w-full px-4 py-3 border border-white/20 dark:border-gray-600 bg-white/5 dark:bg-gray-700 rounded-xl focus:ring-2 focus:ring-cube-light focus:border-transparent transition-all duration-300 text-gray-900 dark:text-white"
                 required
               />
             </motion.div>
@@ -100,11 +100,11 @@ export default function DiagnosticPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="p-8 border border-white/10 bg-white/5 backdrop-blur-sm rounded-xl shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] hover:shadow-[0_8px_32px_0_rgba(31,38,135,0.25)] transition-all duration-300"
+              className="p-8 border border-white/10 dark:border-gray-700 bg-white/5 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_0_rgba(31,38,135,0.25)] dark:hover:shadow-[0_8px_32px_0_rgba(0,0,0,0.4)] transition-all duration-300"
             >
               <div className="flex items-center space-x-3 mb-4">
-                <Icon name="Users" className="text-cube-dark" />
-                <label htmlFor="size" className="block text-sm font-medium text-gray-slogan">
+                <Icon name="Users" className="text-cube-dark dark:text-cube-light" />
+                <label htmlFor="size" className="block text-sm font-medium text-gray-slogan dark:text-gray-300">
                   Taille de l'entreprise
                 </label>
               </div>
@@ -112,7 +112,7 @@ export default function DiagnosticPage() {
                 id="size"
                 value={formData.size}
                 onChange={(e) => setFormData({ ...formData, size: e.target.value })}
-                className="w-full px-4 py-3 border border-white/20 bg-white/5 rounded-xl focus:ring-2 focus:ring-cube-light focus:border-transparent transition-all duration-300"
+                className="w-full px-4 py-3 border border-white/20 dark:border-gray-600 bg-white/5 dark:bg-gray-700 rounded-xl focus:ring-2 focus:ring-cube-light focus:border-transparent transition-all duration-300 text-gray-900 dark:text-white"
                 required
               >
                 <option value="">Sélectionnez une taille</option>
@@ -128,11 +128,11 @@ export default function DiagnosticPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
-              className="p-8 border border-white/10 bg-white/5 backdrop-blur-sm rounded-xl shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] hover:shadow-[0_8px_32px_0_rgba(31,38,135,0.25)] transition-all duration-300"
+              className="p-8 border border-white/10 dark:border-gray-700 bg-white/5 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_0_rgba(31,38,135,0.25)] dark:hover:shadow-[0_8px_32px_0_rgba(0,0,0,0.4)] transition-all duration-300"
             >
               <div className="flex items-center space-x-3 mb-4">
-                <Icon name="Building2" className="text-cube-dark" />
-                <label htmlFor="sector" className="block text-sm font-medium text-gray-slogan">
+                <Icon name="Building2" className="text-cube-dark dark:text-cube-light" />
+                <label htmlFor="sector" className="block text-sm font-medium text-gray-slogan dark:text-gray-300">
                   Secteur d'activité
                 </label>
               </div>
@@ -140,7 +140,7 @@ export default function DiagnosticPage() {
                 id="sector"
                 value={formData.sector}
                 onChange={(e) => setFormData({ ...formData, sector: e.target.value })}
-                className="w-full px-4 py-3 border border-white/20 bg-white/5 rounded-xl focus:ring-2 focus:ring-cube-light focus:border-transparent transition-all duration-300"
+                className="w-full px-4 py-3 border border-white/20 dark:border-gray-600 bg-white/5 dark:bg-gray-700 rounded-xl focus:ring-2 focus:ring-cube-light focus:border-transparent transition-all duration-300 text-gray-900 dark:text-white"
                 required
               >
                 <option value="">Sélectionnez un secteur</option>

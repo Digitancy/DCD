@@ -36,7 +36,10 @@ export function RadarChart({ data, profiles }: RadarChartProps) {
           tick={{ 
             fill: '#64748b', 
             fontSize: 12,
-            dy: 5
+            dy: 5,
+            textAnchor: 'middle',
+            width: 100,
+            height: 50
           }}
         />
         <PolarRadiusAxis

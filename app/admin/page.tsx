@@ -216,216 +216,205 @@ export default function AdminPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cube-dark"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
+    <div className="min-h-screen bg-white dark:bg-gray-900">
       <AdminNavbar />
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          <Transition>
-            <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="relative w-full sm:w-auto"
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 mb-6">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Tableau de bord administrateur</h1>
+          
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 space-y-4 md:space-y-0">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Rechercher..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-cube-dark dark:bg-gray-700 dark:text-white"
+              />
+              <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+            </div>
+            
+            <div className="flex space-x-4">
+              <button
+                onClick={() => setShowPasswordModal(true)}
+                className="bg-cube-light hover:bg-cube-dark text-white px-4 py-2 rounded-lg transition-colors duration-200"
               >
-                <Search
-                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-slogan h-5 w-5"
-                />
-                <input
-                  type="text"
-                  placeholder="Rechercher..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2 w-full sm:w-64 border border-white/20 bg-white/5 rounded-xl focus:ring-2 focus:ring-cube-light focus:border-transparent transition-all duration-300"
-                />
-              </motion.div>
-              <motion.button
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 }}
+                Changer le mot de passe
+              </button>
+              
+              <button
                 onClick={exportToCSV}
-                className="flex items-center px-4 py-2 bg-gradient-to-r from-cube-light to-cube-dark text-white rounded-xl hover:from-cube-dark hover:to-cube-light transition-all duration-300 shadow-[0_4px_14px_0_rgba(0,0,0,0.1)] hover:shadow-[0_6px_20px_0_rgba(0,0,0,0.2)] transform hover:-translate-y-0.5 w-full sm:w-auto justify-center"
+                className="bg-cube-light hover:bg-cube-dark text-white px-4 py-2 rounded-lg transition-colors duration-200"
               >
-                <Search className="h-5 w-5 mr-2" />
                 Exporter en CSV
-              </motion.button>
+              </button>
             </div>
-          </Transition>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="bg-white/5 backdrop-blur-sm border border-white/10 shadow-lg rounded-xl overflow-hidden"
-          >
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-white/10">
-                <thead className="bg-white/5">
-                  <tr>
-                    {[
-                      { field: 'name' as SortField, label: 'Utilisateur' },
-                      { field: 'email' as SortField, label: 'Email' },
-                      { field: 'score' as SortField, label: 'Score' },
-                      { field: 'createdAt' as SortField, label: 'Date' },
-                    ].map((column) => (
-                      <th
-                        key={column.field}
-                        onClick={() => handleSort(column.field)}
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-slogan uppercase tracking-wider cursor-pointer hover:bg-white/5 transition-colors"
+          </div>
+          
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-700">
+                <tr>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
+                    onClick={() => handleSort('name')}
+                  >
+                    Nom
+                    {sortField === 'name' && (
+                      <ArrowUpDown className="inline-block ml-1 h-4 w-4" />
+                    )}
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
+                    onClick={() => handleSort('email')}
+                  >
+                    Email
+                    {sortField === 'email' && (
+                      <ArrowUpDown className="inline-block ml-1 h-4 w-4" />
+                    )}
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
+                    onClick={() => handleSort('score')}
+                  >
+                    Score
+                    {sortField === 'score' && (
+                      <ArrowUpDown className="inline-block ml-1 h-4 w-4" />
+                    )}
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
+                    onClick={() => handleSort('createdAt')}
+                  >
+                    Date
+                    {sortField === 'createdAt' && (
+                      <ArrowUpDown className="inline-block ml-1 h-4 w-4" />
+                    )}
+                  </th>
+                  <th scope="col" className="relative px-6 py-3">
+                    <span className="sr-only">Actions</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                {filteredResults.map((result) => (
+                  <tr key={result.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                      {result.user.name}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                      {result.user.email}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                      {result.score}%
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                      {result.createdAt
+                        ? format(new Date(result.createdAt), 'dd MMMM yyyy à HH:mm', {
+                            locale: fr,
+                          })
+                        : 'N/A'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <button
+                        onClick={() => viewResults(result)}
+                        className="text-cube-light hover:text-cube-dark dark:text-cube-light dark:hover:text-cube-dark mr-4"
                       >
-                        <div className="flex items-center gap-2">
-                          {column.label}
-                          <ArrowUpDown className="h-4 w-4" />
-                        </div>
-                      </th>
-                    ))}
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-slogan uppercase tracking-wider">
-                      Actions
-                    </th>
+                        <Eye className="h-5 w-5" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(result.id)}
+                        className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                      >
+                        <Trash2 className="h-5 w-5" />
+                      </button>
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="divide-y divide-white/10">
-                  {filteredResults.length === 0 ? (
-                    <tr>
-                      <td
-                        colSpan={5}
-                        className="px-6 py-4 text-center text-gray-slogan text-sm"
-                      >
-                        Aucun résultat trouvé
-                      </td>
-                    </tr>
-                  ) : (
-                    filteredResults.map((result) => (
-                      <tr
-                        key={result.id}
-                        className="hover:bg-white/5 transition-colors"
-                      >
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm font-medium text-hex-dark">
-                            {result.user?.name || 'Non renseigné'}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-slogan">
-                            {result.user?.email || 'Non renseigné'}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-slogan">
-                            {result.score}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-slogan">
-                            {result.createdAt ? 
-                              format(new Date(result.createdAt), 'Pp', { locale: fr }) : 
-                              'Date inconnue'}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          <div className="flex items-center gap-3">
-                            <button
-                              onClick={() => viewResults(result)}
-                              className="p-2 text-gray-slogan hover:text-hex-dark transition-colors"
-                              title="Voir les réponses"
-                            >
-                              <Eye className="h-5 w-5" />
-                            </button>
-                            <button
-                              onClick={() => handleDelete(result.id)}
-                              className="p-2 text-gray-slogan hover:text-red-600 transition-colors"
-                              title="Supprimer"
-                              disabled={deleteLoading === result.id}
-                            >
-                              {deleteLoading === result.id ? (
-                                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-red-600"></div>
-                              ) : (
-                                <Trash2 className="h-5 w-5" />
-                              )}
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </motion.div>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </main>
+      </div>
 
+      {/* Modal de changement de mot de passe */}
       {showPasswordModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full">
-            <h2 className="text-xl font-bold mb-4">Changer le mot de passe</h2>
-            <form onSubmit={handleChangePassword}>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Mot de passe actuel
-                  </label>
-                  <input
-                    type="password"
-                    value={currentPassword}
-                    onChange={(e) => setCurrentPassword(e.target.value)}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Nouveau mot de passe
-                  </label>
-                  <input
-                    type="password"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Confirmer le nouveau mot de passe
-                  </label>
-                  <input
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                    required
-                  />
-                </div>
-                {passwordError && (
-                  <p className="text-red-500 text-sm">{passwordError}</p>
-                )}
-                {passwordSuccess && (
-                  <p className="text-green-500 text-sm">
-                    Mot de passe changé avec succès !
-                  </p>
-                )}
-                <div className="flex justify-end gap-4">
-                  <button
-                    type="button"
-                    onClick={() => setShowPasswordModal(false)}
-                    className="px-4 py-2 text-gray-600 hover:text-gray-900"
-                  >
-                    Annuler
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                  >
-                    Changer le mot de passe
-                  </button>
-                </div>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Changer le mot de passe</h2>
+            <form onSubmit={handleChangePassword} className="space-y-4">
+              <div>
+                <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Mot de passe actuel
+                </label>
+                <input
+                  type="password"
+                  id="currentPassword"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  required
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-cube-dark focus:border-cube-dark dark:bg-gray-700 dark:text-white"
+                />
+              </div>
+              <div>
+                <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Nouveau mot de passe
+                </label>
+                <input
+                  type="password"
+                  id="newPassword"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  required
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-cube-dark focus:border-cube-dark dark:bg-gray-700 dark:text-white"
+                />
+              </div>
+              <div>
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Confirmer le nouveau mot de passe
+                </label>
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-cube-dark focus:border-cube-dark dark:bg-gray-700 dark:text-white"
+                />
+              </div>
+              
+              {passwordError && (
+                <div className="text-red-500 text-sm">{passwordError}</div>
+              )}
+              
+              {passwordSuccess && (
+                <div className="text-green-500 text-sm">Mot de passe changé avec succès !</div>
+              )}
+              
+              <div className="flex justify-end space-x-3 mt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowPasswordModal(false)}
+                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                >
+                  Annuler
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-cube-light hover:bg-cube-dark text-white rounded-md"
+                >
+                  Changer le mot de passe
+                </button>
               </div>
             </form>
           </div>

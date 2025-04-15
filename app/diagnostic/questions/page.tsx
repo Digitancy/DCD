@@ -63,31 +63,31 @@ export default function QuestionsPage() {
   }
 
   return (
-    <main className="min-h-screen p-8 md:p-24 bg-gradient-to-b from-white to-gray-50">
+    <main className="min-h-screen p-8 md:p-24 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
       <div className="max-w-2xl mx-auto">
         <div className="relative mb-12">
-          <div className="absolute -top-20 -left-20 w-40 h-40 bg-cube-light/20 rounded-full blur-3xl" />
-          <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-hex-light/20 rounded-full blur-3xl" />
+          <div className="absolute -top-20 -left-20 w-40 h-40 bg-cube-light/20 dark:bg-cube-light/10 rounded-full blur-3xl" />
+          <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-hex-light/20 dark:bg-hex-light/10 rounded-full blur-3xl" />
           
-          <div className="p-6 border-2 border-hex-dark/10 bg-white rounded-xl shadow-lg relative mb-8">
-            <div className="absolute inset-0 bg-gradient-to-r from-hex-light/5 to-cube-light/5 rounded-xl" />
+          <div className="p-6 border-2 border-hex-dark/10 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-xl shadow-lg relative mb-8">
+            <div className="absolute inset-0 bg-gradient-to-r from-hex-light/5 to-cube-light/5 dark:from-hex-light/10 dark:to-cube-light/10 rounded-xl" />
             <div className="relative">
               <div className="flex items-center space-x-3 mb-4">
                 <Icon 
                   name={universeIcons[currentQuestion.universe as UniverseKey]} 
-                  className="text-hex-dark"
+                  className="text-hex-dark dark:text-hex-light"
                   size="lg"
                 />
-                <h1 className="text-3xl font-bold text-hex-dark">
+                <h1 className="text-3xl font-bold text-hex-dark dark:text-white">
                   {currentQuestion.universe}
                 </h1>
               </div>
               
               <div className="flex items-center justify-between">
-                <p className="text-gray-slogan">
+                <p className="text-gray-slogan dark:text-gray-300">
                   Question {currentQuestionIndex + 1} sur {questions.length}
                 </p>
-                <div className="h-2 w-48 bg-gray-200 rounded-full overflow-hidden">
+                <div className="h-2 w-48 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                   <motion.div
                     className="h-full bg-gradient-to-r from-cube-light to-cube-dark"
                     initial={{ width: 0 }}
@@ -100,20 +100,20 @@ export default function QuestionsPage() {
           </div>
         </div>
 
-        <div className="p-8 border-2 border-cube-dark/10 bg-white rounded-xl shadow-lg relative mb-8">
-          <div className="absolute inset-0 bg-gradient-to-r from-cube-light/5 to-hex-light/5 rounded-xl" />
+        <div className="p-8 border-2 border-cube-dark/10 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-xl shadow-lg relative mb-8">
+          <div className="absolute inset-0 bg-gradient-to-r from-cube-light/5 to-hex-light/5 dark:from-cube-light/10 dark:to-hex-light/10 rounded-xl" />
           <div className="relative">
             <div className="flex items-center space-x-3 mb-4">
               <Icon 
                 name={profileIcons[currentQuestion.profile as ProfileKey]} 
-                className="text-cube-dark"
+                className="text-cube-dark dark:text-cube-light"
                 size="md"
               />
-              <h2 className="text-xl font-semibold text-cube-dark">
+              <h2 className="text-xl font-semibold text-cube-dark dark:text-cube-light">
                 {currentQuestion.profile}
               </h2>
             </div>
-            <p className="text-gray-slogan">
+            <p className="text-gray-slogan dark:text-gray-300">
               {currentQuestion.question}
             </p>
           </div>
@@ -129,8 +129,8 @@ export default function QuestionsPage() {
                 transition={{ duration: 0.3, delay: index * 0.1 }}
                 className={`block p-6 border rounded-xl cursor-pointer transition-all duration-300 ${
                   selectedAnswer === index
-                    ? 'border-cube-light bg-cube-light bg-opacity-10 shadow-[0_8px_32px_0_rgba(31,38,135,0.25)]'
-                    : 'border-white/10 bg-white/5 backdrop-blur-sm hover:border-cube-light/50 shadow-[0_8px_32px_0_rgba(31,38,135,0.15)]'
+                    ? 'border-cube-light bg-cube-light bg-opacity-10 dark:bg-cube-light/20 shadow-[0_8px_32px_0_rgba(31,38,135,0.25)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.4)]'
+                    : 'border-white/10 dark:border-gray-700 bg-white/5 dark:bg-gray-800/50 backdrop-blur-sm hover:border-cube-light/50 dark:hover:border-cube-light/30 shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.3)]'
                 }`}
               >
                 <input
@@ -141,7 +141,7 @@ export default function QuestionsPage() {
                   onChange={() => setSelectedAnswer(index)}
                   className="hidden"
                 />
-                <span className="font-medium text-gray-slogan">{answer.text}</span>
+                <span className="font-medium text-gray-slogan dark:text-gray-300">{answer.text}</span>
               </motion.label>
             ))}
           </div>
@@ -154,7 +154,7 @@ export default function QuestionsPage() {
             className={`w-full px-8 py-4 rounded-xl transition-all duration-300 ${
               selectedAnswer !== null
                 ? 'bg-gradient-to-r from-cube-light to-cube-dark text-white shadow-[0_4px_14px_0_rgba(0,0,0,0.1)] hover:shadow-[0_6px_20px_0_rgba(0,0,0,0.2)]'
-                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                : 'bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed'
             }`}
           >
             {currentQuestionIndex === questions.length - 1

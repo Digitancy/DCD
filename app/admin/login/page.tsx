@@ -29,7 +29,7 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
-        setError('Identifiants incorrects');
+        setError('Identifiants invalides');
       } else {
         router.push('/admin');
       }
@@ -41,104 +41,94 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="min-h-screen p-8 md:p-24 bg-gradient-to-b from-white to-gray-50">
-      <div className="max-w-md mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <div className="relative mb-12">
-            <div className="absolute -top-20 -left-20 w-40 h-40 bg-cube-light/20 rounded-full blur-3xl" />
-            <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-hex-light/20 rounded-full blur-3xl" />
-            
-            <div className="flex flex-col items-center mb-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <div>
+          <div className="flex justify-center">
+            <div className="relative w-20 h-20">
               <Image
                 src="/images/digitancy-logo.png"
                 alt="Digitancy Logo"
-                width={200}
-                height={80}
-                priority
-                className="mb-6"
+                fill
+                className="object-contain"
               />
             </div>
-
-            <h1 className="text-3xl font-bold text-hex-dark mb-4 relative text-center">
-              Administration Digitancy
-              <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-cube-light to-cube-dark rounded-full" />
-            </h1>
-            <p className="text-gray-slogan text-center">
-              Connectez-vous pour accéder au tableau de bord
-            </p>
           </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="p-8 border border-white/10 bg-white/5 backdrop-blur-sm rounded-xl shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] hover:shadow-[0_8px_32px_0_rgba(31,38,135,0.25)] transition-all duration-300"
-        >
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
+            Connexion administrateur
+          </h2>
+        </div>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <div className="rounded-md shadow-sm -space-y-px">
             <div>
-              <div className="flex items-center space-x-3 mb-2">
-                <Icon name="Mail" className="text-cube-dark" size="sm" />
-                <label htmlFor="email" className="block text-sm font-medium text-gray-slogan">
-                  Email
-                </label>
-              </div>
+              <label htmlFor="email" className="sr-only">
+                Adresse email
+              </label>
               <input
-                type="email"
                 id="email"
                 name="email"
+                type="email"
+                autoComplete="email"
                 required
-                className="w-full px-4 py-3 border border-white/20 bg-white/5 rounded-xl focus:ring-2 focus:ring-cube-light focus:border-transparent transition-all duration-300"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm dark:bg-gray-700"
+                placeholder="Adresse email"
               />
             </div>
-
             <div>
-              <div className="flex items-center space-x-3 mb-2">
-                <Icon name="Lock" className="text-cube-dark" size="sm" />
-                <label htmlFor="password" className="block text-sm font-medium text-gray-slogan">
-                  Mot de passe
-                </label>
-              </div>
+              <label htmlFor="password" className="sr-only">
+                Mot de passe
+              </label>
               <input
-                type="password"
                 id="password"
                 name="password"
+                type="password"
+                autoComplete="current-password"
                 required
-                className="w-full px-4 py-3 border border-white/20 bg-white/5 rounded-xl focus:ring-2 focus:ring-cube-light focus:border-transparent transition-all duration-300"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm dark:bg-gray-700"
+                placeholder="Mot de passe"
               />
             </div>
+          </div>
 
-            {error && (
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-red-500 text-sm"
-              >
-                {error}
-              </motion.p>
-            )}
+          {error && (
+            <div className="text-red-500 text-sm text-center">{error}</div>
+          )}
 
+          <div>
             <button
               type="submit"
               disabled={loading}
-              className="w-full px-8 py-4 bg-gradient-to-r from-cube-light to-cube-dark text-white rounded-xl hover:from-cube-dark hover:to-cube-light transition-all duration-300 shadow-[0_4px_14px_0_rgba(0,0,0,0.1)] hover:shadow-[0_6px_20px_0_rgba(0,0,0,0.2)] transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
               {loading ? (
-                <div className="flex items-center justify-center">
-                  <Icon name="RefreshCw" className="mr-2" size="sm" spin />
-                  Connexion en cours...
-                </div>
-              ) : (
-                'Se connecter'
-              )}
+                <span className="absolute left-0 inset-y-0 flex items-center pl-3">
+                  <svg
+                    className="animate-spin h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                </span>
+              ) : null}
+              {loading ? 'Connexion en cours...' : 'Se connecter'}
             </button>
-          </form>
-        </motion.div>
+          </div>
+        </form>
       </div>
-    </main>
+    </div>
   );
 } 
