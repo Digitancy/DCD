@@ -11,6 +11,7 @@ import { motion } from 'framer-motion'
 import { RadarChart } from '../../components/RadarChart'
 import { DiagnosticPDF } from '../../components/DiagnosticPDF'
 import { pdf } from '@react-pdf/renderer'
+import { toast } from 'react-hot-toast'
 
 interface UniverseResult {
   universe: string
@@ -29,10 +30,16 @@ interface DiagnosticPDFProps {
     size: string;
     sector: string;
   };
-  globalProfile: {
-    universe: string;
+  globalProfiles: {
+    name: string;
     score: number;
-    level: string;
+    levelDistribution: Record<string, number>;
+    scores: {
+      [profile: string]: {
+        level: string;
+        score: number;
+      }
+    }
   }[];
   results: UniverseResult[];
 }
@@ -83,6 +90,14 @@ const getLevelFromScore = (score: number): string => {
 // Fonction pour arrondir les scores
 const roundScore = (score: number): number => {
   return Math.round(score)
+}
+
+const formatDate = (date: Date) => {
+  return date.toLocaleDateString('fr-FR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  });
 }
 
 export default function ResultsPage() {
@@ -200,51 +215,74 @@ export default function ResultsPage() {
   }
 
   const handleDownloadPDF = async () => {
-    if (!companyInfo && !isAdminMode) return
-
-    setIsGeneratingPDF(true)
     try {
-      console.log('Début de la génération du PDF')
+      setIsGeneratingPDF(true);
+      
+      // Utiliser les données de l'utilisateur en fonction du mode
+      const userData = isAdminMode && adminData ? {
+        name: adminData.user.name,
+        email: adminData.user.email,
+        size: adminData.companyInfo?.size || '',
+        sector: adminData.companyInfo?.sector || ''
+      } : {
+        name: companyInfo?.name || '',
+        email: companyInfo?.email || '',
+        size: companyInfo?.size || '',
+        sector: companyInfo?.sector || ''
+      };
+      
       const pdfData = {
-        companyInfo: isAdminMode ? {
-          name: adminData?.user?.name || 'Non renseigné',
-          email: adminData?.user?.email || '',
-          size: '',
-          sector: ''
-        } : (companyInfo || {
-          name: 'Non renseigné',
-          email: '',
-          size: '',
-          sector: ''
-        }),
-        globalProfile: results.map(result => ({
-          universe: result.universe,
-          score: Object.values(result.scores).reduce((sum, p) => sum + p.score, 0) / Object.values(result.scores).length,
-          level: getLevelFromScore(
-            Object.values(result.scores).reduce((sum, p) => sum + p.score, 0) / Object.values(result.scores).length
+        companyInfo: userData,
+        globalProfiles: results.map(result => ({
+          name: result.universe,
+          score: roundScore(Math.round(Object.values(result.scores).reduce((sum, p) => sum + p.score, 0) / Object.values(result.scores).length)),
+          levelDistribution: Object.values(result.scores).reduce((acc, p) => {
+            if (!acc[p.level]) acc[p.level] = 0;
+            acc[p.level]++;
+            return acc;
+          }, {} as { [level: string]: number }),
+          scores: Object.fromEntries(
+            Object.entries(result.scores).map(([profile, data]) => [
+              profile,
+              {
+                level: data.level,
+                score: data.score
+              }
+            ])
           )
         })),
-        results
-      }
+        results: results.map(result => ({
+          universe: result.universe,
+          scores: Object.fromEntries(
+            PROFILES.map(profile => [
+              profile,
+              {
+                level: result.scores[profile].level,
+                score: roundScore(result.scores[profile].score)
+              }
+            ])
+          )
+        }))
+      };
+
+      const blob = await pdf(<DiagnosticPDF {...pdfData} />).toBlob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `diagnostic-digital-${formatDate(new Date())}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
       
-      // Générer le PDF
-      const pdfBlob = await pdf(<DiagnosticPDF {...pdfData} />).toBlob()
-      
-      // Créer un lien de téléchargement
-      const url = URL.createObjectURL(pdfBlob)
-      const link = document.createElement('a')
-      link.href = url
-      link.download = `diagnostic-digitancy-${new Date().toISOString().split('T')[0]}.pdf`
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-      URL.revokeObjectURL(url)
+      toast.success('PDF généré avec succès !');
     } catch (error) {
-      console.error('Erreur lors de la génération du PDF:', error)
+      console.error('Erreur lors de la génération du PDF:', error);
+      toast.error('Erreur lors de la génération du PDF');
     } finally {
-      setIsGeneratingPDF(false)
+      setIsGeneratingPDF(false);
     }
-  }
+  };
 
   // Calculer le score global une seule fois
   const globalScore = results.length > 0 
@@ -343,22 +381,65 @@ export default function ResultsPage() {
 
   return (
     <main className="min-h-screen p-8 md:p-24 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         <div className="relative mb-12">
           <div className="absolute -top-20 -left-20 w-40 h-40 bg-cube-light/20 dark:bg-cube-light/10 rounded-full blur-3xl" />
           <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-hex-light/20 dark:bg-hex-light/10 rounded-full blur-3xl" />
           
-          <h1 className="text-3xl font-bold text-hex-dark dark:text-white mb-4 relative">
+          <h1 className="text-4xl font-bold text-hex-dark dark:text-white mb-4 relative">
             Résultats du diagnostic
             <div className="absolute -bottom-2 left-0 w-32 h-1 bg-gradient-to-r from-cube-light to-cube-dark rounded-full" />
           </h1>
-          <p className="text-gray-slogan dark:text-gray-300">
-            Voici l'analyse de vos compétences digitales
+          <p className="text-xl text-gray-slogan dark:text-gray-300">
+            Voici l'analyse détaillée de vos compétences digitales
           </p>
         </div>
 
+        {/* Bloc d'informations sur l'entreprise */}
+        <div className="mb-12 p-6 border-2 border-hex-dark/10 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-xl shadow-lg relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-hex-light/5 to-cube-light/5 dark:from-hex-light/10 dark:to-cube-light/10 rounded-xl" />
+          <div className="relative">
+            <h2 className="text-2xl font-bold text-hex-dark dark:text-white mb-6">Informations de l'entreprise</h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Nom de l'entreprise</p>
+                <p className="font-medium text-gray-900 dark:text-white">
+                  {isAdminMode && adminData ? adminData.user.name : companyInfo?.name}
+                </p>
+              </div>
+              
+              <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Email</p>
+                <p className="font-medium text-gray-900 dark:text-white">
+                  {isAdminMode && adminData ? adminData.user.email : companyInfo?.email}
+                </p>
+              </div>
+              
+              <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Taille de l'entreprise</p>
+                <p className="font-medium text-gray-900 dark:text-white">
+                  {isAdminMode && adminData ? adminData.companyInfo?.size : companyInfo?.size}
+                </p>
+              </div>
+              
+              <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Secteur d'activité</p>
+                <p className="font-medium text-gray-900 dark:text-white">
+                  {isAdminMode && adminData ? adminData.companyInfo?.sector : companyInfo?.sector}
+                </p>
+              </div>
+
+              <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Date du diagnostic</p>
+                <p className="font-medium text-gray-900 dark:text-white">{formatDate(new Date())}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-          <div className="lg:col-span-2 p-8 border-2 border-hex-dark/10 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-xl shadow-lg relative">
+          <div className="lg:col-span-2 p-8 border-2 border-hex-dark/10 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-xl shadow-lg relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-r from-hex-light/5 to-cube-light/5 dark:from-hex-light/10 dark:to-cube-light/10 rounded-xl" />
             <div className="relative">
               <h2 className="text-2xl font-bold text-hex-dark dark:text-white mb-6">Profil global</h2>
@@ -372,11 +453,14 @@ export default function ResultsPage() {
                   />
                 </div>
                 <div className="text-center md:text-left">
-                  <p className="text-4xl font-bold text-cube-dark dark:text-cube-light mb-2">
+                  <p className="text-5xl font-bold text-cube-dark dark:text-cube-light mb-2">
                     {globalScore}%
                   </p>
-                  <p className="text-xl font-medium text-gray-slogan dark:text-gray-300">
+                  <p className="text-2xl font-medium text-gray-slogan dark:text-gray-300">
                     Niveau: {globalLevel}
+                  </p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                    Basé sur {UNIVERSES.length} univers et {PROFILES.length} profils
                   </p>
                 </div>
               </div>
@@ -387,7 +471,7 @@ export default function ResultsPage() {
                   {results.map((result, index) => (
                     <div 
                       key={index}
-                      className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white/50 dark:bg-gray-800/50"
+                      className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white/50 dark:bg-gray-800/50 hover:shadow-md transition-shadow"
                     >
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center space-x-2">
@@ -479,7 +563,7 @@ export default function ResultsPage() {
             </div>
           </div>
           
-          <div className="p-8 border-2 border-cube-dark/10 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-xl shadow-lg relative">
+          <div className="p-8 border-2 border-cube-dark/10 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-xl shadow-lg relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-r from-cube-light/5 to-hex-light/5 dark:from-cube-light/10 dark:to-hex-light/10 rounded-xl" />
             <div className="relative">
               <h2 className="text-2xl font-bold text-cube-dark dark:text-cube-light mb-6">Radar de compétences</h2>
@@ -553,7 +637,7 @@ export default function ResultsPage() {
 
           {activeTab === 'overview' && stats && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="p-6 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 shadow-md">
+              <div className="p-6 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 shadow-md hover:shadow-lg transition-shadow">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Points forts</h3>
                 <div className="flex items-center space-x-3 mb-2">
                   <Icon 
@@ -571,7 +655,7 @@ export default function ResultsPage() {
                 </p>
               </div>
 
-              <div className="p-6 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 shadow-md">
+              <div className="p-6 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 shadow-md hover:shadow-lg transition-shadow">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Points à améliorer</h3>
                 <div className="flex items-center space-x-3 mb-2">
                   <Icon 
@@ -589,7 +673,7 @@ export default function ResultsPage() {
                 </p>
               </div>
 
-              <div className="p-6 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 shadow-md">
+              <div className="p-6 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 shadow-md hover:shadow-lg transition-shadow">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Distribution des niveaux</h3>
                 <div className="space-y-2">
                   {Object.entries(stats.levelDistribution).map(([level, count]) => (
@@ -612,7 +696,7 @@ export default function ResultsPage() {
           {activeTab === 'details' && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {results.map((result, index) => (
-                <div key={index} className="p-6 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 shadow-md">
+                <div key={index} className="p-6 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 shadow-md hover:shadow-lg transition-shadow">
                   <div className="flex items-center space-x-3 mb-4">
                     <Icon 
                       name={UNIVERSES.find(u => u.name === result.universe)?.icon as any} 
@@ -655,7 +739,7 @@ export default function ResultsPage() {
 
           {activeTab === 'comparison' && selectedProfile !== 'Tous' && stats && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="p-6 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 shadow-md">
+              <div className="p-6 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 shadow-md hover:shadow-lg transition-shadow">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Écarts avec {selectedProfile}</h3>
                 <div className="space-y-4">
                   {stats.profileGaps.map((gap, index) => (
@@ -697,7 +781,7 @@ export default function ResultsPage() {
                 </p>
               </div>
 
-              <div className="p-6 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 shadow-md">
+              <div className="p-6 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 shadow-md hover:shadow-lg transition-shadow">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Recommandations</h3>
                 <div className="space-y-4">
                   {stats.profileGaps.map((gap, index) => (
@@ -737,15 +821,25 @@ export default function ResultsPage() {
         </div>
         
         <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 md:space-x-4">
-          <Button
-            onClick={handleNewDiagnostic}
-            iconName="RefreshCw"
-            iconPosition="left"
-            variant="outline"
-            className="w-full md:w-auto"
-          >
-            Nouveau diagnostic
-          </Button>
+          {isAdminMode ? (
+            <Button
+              onClick={() => router.push('/admin')}
+              variant="outline"
+              className="w-full md:w-auto"
+            >
+              Retour à l'administration
+            </Button>
+          ) : (
+            <Button
+              onClick={handleNewDiagnostic}
+              iconName="RefreshCw"
+              iconPosition="left"
+              variant="outline"
+              className="w-full md:w-auto"
+            >
+              Nouveau diagnostic
+            </Button>
+          )}
           
           <Button
             onClick={handleDownloadPDF}
