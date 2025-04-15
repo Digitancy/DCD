@@ -9,7 +9,7 @@ import {
   doc,
   updateDoc,
   deleteDoc
-} from '../../lib/firebase';
+} from '@/lib/firebase';
 import { DocumentData } from 'firebase/firestore';
 
 interface Todo {
