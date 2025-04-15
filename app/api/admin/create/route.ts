@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
+import { db } from '@/lib/firebase';
+import { collection, query, where, getDocs, addDoc } from 'firebase/firestore';
 import bcrypt from 'bcryptjs';
-import { prisma } from '@/lib/prisma';
 
 export async function POST(request: Request) {
   try {
@@ -8,8 +9,11 @@ export async function POST(request: Request) {
     const { email, password, name } = body;
 
     // Vérifier si un admin existe déjà
-    const existingAdmin = await prisma.admin.findFirst();
-    if (existingAdmin) {
+    const adminRef = collection(db, 'admins');
+    const q = query(adminRef);
+    const querySnapshot = await getDocs(q);
+    
+    if (!querySnapshot.empty) {
       return NextResponse.json(
         { error: 'Un administrateur existe déjà' },
         { status: 400 }
@@ -20,17 +24,19 @@ export async function POST(request: Request) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Créer l'administrateur
-    const admin = await prisma.admin.create({
-      data: {
-        email,
-        password: hashedPassword,
-        name,
-      },
-    });
+    const adminData = {
+      email,
+      password: hashedPassword,
+      name,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    const docRef = await addDoc(collection(db, 'admins'), adminData);
 
     // Ne pas renvoyer le mot de passe
-    const { password: _, ...adminWithoutPassword } = admin;
-    return NextResponse.json(adminWithoutPassword);
+    const { password: _, ...adminWithoutPassword } = adminData;
+    return NextResponse.json({ id: docRef.id, ...adminWithoutPassword });
   } catch (error) {
     console.error('Erreur lors de la création de l\'administrateur:', error);
     return NextResponse.json(
