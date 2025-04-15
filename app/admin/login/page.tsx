@@ -18,12 +18,12 @@ export default function LoginPage() {
     setLoading(true);
 
     const formData = new FormData(e.currentTarget);
-    const username = formData.get('username') as string;
+    const email = formData.get('email') as string;
     const password = formData.get('password') as string;
 
     try {
       const result = await signIn('credentials', {
-        username,
+        email,
         password,
         redirect: false,
       });
@@ -82,15 +82,15 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <div className="flex items-center space-x-3 mb-2">
-                <Icon name="User" className="text-cube-dark" size="sm" />
-                <label htmlFor="username" className="block text-sm font-medium text-gray-slogan">
-                  Nom d'utilisateur
+                <Icon name="Mail" className="text-cube-dark" size="sm" />
+                <label htmlFor="email" className="block text-sm font-medium text-gray-slogan">
+                  Email
                 </label>
               </div>
               <input
-                type="text"
-                id="username"
-                name="username"
+                type="email"
+                id="email"
+                name="email"
                 required
                 className="w-full px-4 py-3 border border-white/20 bg-white/5 rounded-xl focus:ring-2 focus:ring-cube-light focus:border-transparent transition-all duration-300"
               />

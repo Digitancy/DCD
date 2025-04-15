@@ -1,0 +1,17 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Collection admins
+    match /admins/{adminId} {
+      allow read: if true;  // Temporairement autorisé pour le développement
+      allow write: if true; // Temporairement autorisé pour le développement
+    }
+    
+    // Collection results
+    match /results/{resultId} {
+      allow read: if true;  // Temporairement autorisé pour le développement
+      allow write: if true; // Temporairement autorisé pour le développement
+    }
+  }
+} 
