@@ -18,8 +18,8 @@ interface Result {
   answers: any;
   companyInfo?: any;
   userId: string;
-  createdAt?: any;
-  updatedAt?: any;
+  createdAt?: string | null;
+  updatedAt?: string | null;
   user?: User;
 }
 
@@ -115,11 +115,15 @@ export async function GET() {
     // Combiner les résultats avec les utilisateurs
     const results: Result[] = resultsSnapshot.docs.map(doc => {
       const data = doc.data();
-      return {
+      // Convertir les timestamps Firestore en objets Date pour la sérialisation JSON
+      const result = {
         id: doc.id,
         ...data,
+        createdAt: data.createdAt ? data.createdAt.toDate ? data.createdAt.toDate().toISOString() : new Date(data.createdAt.seconds * 1000).toISOString() : null,
+        updatedAt: data.updatedAt ? data.updatedAt.toDate ? data.updatedAt.toDate().toISOString() : new Date(data.updatedAt.seconds * 1000).toISOString() : null,
         user: users[data.userId] || null
       } as Result;
+      return result;
     });
 
     return NextResponse.json(results);

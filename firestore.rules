@@ -13,5 +13,11 @@ service cloud.firestore {
       allow read: if true;  // Temporairement autorisé pour le développement
       allow write: if true; // Temporairement autorisé pour le développement
     }
+
+    // Collection users
+    match /users/{userId} {
+      allow read: if true;  // Temporairement autorisé pour le développement
+      allow write: if true; // Temporairement autorisé pour le développement
+    }
   }
 } 

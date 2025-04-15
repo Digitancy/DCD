@@ -9,12 +9,13 @@ import { Transition } from '@/components/ui/transition';
 import { signOut, useSession } from 'next-auth/react';
 import AdminNavbar from '@/components/ui/nav/AdminNavbar';
 import { useRouter } from 'next/navigation';
+import { Timestamp } from 'firebase/firestore';
 
 interface Result {
   id: string;
   score: number;
   answers: any;
-  createdAt: string;
+  createdAt: any; // Peut être un Timestamp Firestore ou une chaîne ISO
   user: {
     name: string;
     email: string;
@@ -108,7 +109,30 @@ export default function AdminPage() {
       case 'score':
         return multiplier * (a.score - b.score);
       case 'createdAt':
-        return multiplier * (new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+        let dateA: Date;
+        let dateB: Date;
+        
+        if (typeof a.createdAt === 'string') {
+          dateA = new Date(a.createdAt);
+        } else if (a.createdAt && typeof a.createdAt.toDate === 'function') {
+          dateA = a.createdAt.toDate();
+        } else if (a.createdAt && a.createdAt.seconds) {
+          dateA = new Date(a.createdAt.seconds * 1000);
+        } else {
+          dateA = new Date(0); // Date invalide
+        }
+        
+        if (typeof b.createdAt === 'string') {
+          dateB = new Date(b.createdAt);
+        } else if (b.createdAt && typeof b.createdAt.toDate === 'function') {
+          dateB = b.createdAt.toDate();
+        } else if (b.createdAt && b.createdAt.seconds) {
+          dateB = new Date(b.createdAt.seconds * 1000);
+        } else {
+          dateB = new Date(0); // Date invalide
+        }
+        
+        return multiplier * (dateA.getTime() - dateB.getTime());
       default:
         return 0;
     }
@@ -131,7 +155,17 @@ export default function AdminPage() {
       result.user.name || 'Non renseigné',
       result.user.email,
       result.score,
-      format(new Date(result.createdAt), 'Pp', { locale: fr }),
+      result.createdAt ? 
+        format(
+          typeof result.createdAt === 'string' 
+            ? new Date(result.createdAt) 
+            : (typeof result.createdAt.toDate === 'function' 
+                ? result.createdAt.toDate() 
+                : new Date(result.createdAt.seconds * 1000)), 
+          'Pp', 
+          { locale: fr }
+        ) : 
+        'Date inconnue',
       JSON.stringify(result.answers),
     ]);
 
@@ -195,13 +229,20 @@ export default function AdminPage() {
   };
 
   const viewResults = (result: Result) => {
+    // Convertir le timestamp Firestore en format sérialisable
+    const serializableResult = {
+      ...result,
+      createdAt: result.createdAt ? 
+        (typeof result.createdAt.toDate === 'function' 
+          ? result.createdAt.toDate().toISOString() 
+          : (result.createdAt.seconds 
+              ? new Date(result.createdAt.seconds * 1000).toISOString()
+              : null)) 
+        : null
+    };
+    
     // Stocker temporairement les données dans le localStorage
-    localStorage.setItem('adminViewResult', JSON.stringify({
-      answers: result.answers,
-      score: result.score,
-      user: result.user,
-      createdAt: result.createdAt
-    }));
+    localStorage.setItem('adminViewResult', JSON.stringify(serializableResult));
     router.push('/diagnostic/results?mode=admin');
   };
 
@@ -315,9 +356,17 @@ export default function AdminPage() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-slogan">
-                            {format(new Date(result.createdAt), 'Pp', {
-                              locale: fr,
-                            })}
+                            {result.createdAt ? 
+                              format(
+                                typeof result.createdAt === 'string' 
+                                  ? new Date(result.createdAt) 
+                                  : (typeof result.createdAt.toDate === 'function' 
+                                      ? result.createdAt.toDate() 
+                                      : new Date(result.createdAt.seconds * 1000)), 
+                                'Pp', 
+                                { locale: fr }
+                              ) : 
+                              'Date inconnue'}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">

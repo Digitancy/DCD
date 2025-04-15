@@ -319,13 +319,13 @@ export default function ResultsPage() {
               <h2 className="text-xl font-semibold mb-2">Informations utilisateur</h2>
               <p>Nom : {adminData.user.name || 'Non renseigné'}</p>
               <p>Email : {adminData.user.email}</p>
-              <p>Date : {new Date(adminData.createdAt).toLocaleDateString('fr-FR', {
+              <p>Date : {adminData.createdAt ? new Date(adminData.createdAt).toLocaleDateString('fr-FR', {
                 day: 'numeric',
                 month: 'long',
                 year: 'numeric',
                 hour: '2-digit',
                 minute: '2-digit'
-              })}</p>
+              }) : 'Date inconnue'}</p>
             </div>
           )}
         </div>
