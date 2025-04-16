@@ -6,12 +6,52 @@
 CompDigi est une application web permettant aux entreprises d'évaluer leurs compétences digitales à travers différents univers (Transformation Digitale, Agilité, Innovation, etc.). L'application guide les utilisateurs à travers un diagnostic personnalisé et fournit des résultats détaillés avec une interface moderne et intuitive.
 
 ### Technologies Utilisées
-- Next.js 14 (App Router)
-- TypeScript
-- Tailwind CSS
-- Zustand (gestion d'état)
-- Framer Motion (animations)
-- Lucide Icons
+- **Frontend**
+  - Next.js 14 (App Router) - Framework React pour le rendu côté serveur et client
+  - TypeScript - Typage statique pour une meilleure maintenabilité
+  - Tailwind CSS - Framework CSS utilitaire pour un design responsive
+  - Zustand - Gestion d'état légère et performante
+  - Framer Motion - Bibliothèque d'animations React
+  - Lucide Icons - Pack d'icônes modernes et personnalisables
+
+- **Performance & SEO**
+  - Optimisation des images avec next/image
+  - Métadonnées dynamiques pour le SEO
+  - Hydration progressive
+  - Code splitting automatique
+
+- **Développement**
+  - ESLint - Linting du code
+  - Prettier - Formatage du code
+  - Husky - Hooks Git pour la qualité du code
+  - Jest & React Testing Library - Tests unitaires et d'intégration
+
+- **Déploiement**
+  - Vercel - Plateforme de déploiement optimisée pour Next.js
+  - CI/CD automatisé
+  - Environnements de développement, staging et production
+
+### Architecture de la Base de Données
+
+#### Base de Données (Firebase Firestore)
+- **Collections**
+  - `admins` : Gestion des administrateurs
+    - Authentification sécurisée
+    - Informations de profil (id, email, nom)
+    - Horodatage (création, mise à jour)
+  - `results` : Stockage des diagnostics
+    - Score global
+    - Réponses détaillées (JSON)
+    - Informations sur l'entreprise
+    - Liaison avec l'utilisateur
+  - `users` : Profils utilisateurs
+    - Informations de base (id, email, nom)
+    - Relation avec les résultats
+    - Horodatage (création, mise à jour)
+- **Sécurité**
+  - Règles Firestore configurées
+  - Contrôle d'accès par collection
+  - Authentification Firebase
 
 ## Fonctionnalités Implémentées
 
